@@ -26,7 +26,7 @@ export function SiteHeader() {
           onClick={() => setAbierto(false)}
         >
           <Image
-            src="/logo-asada.png"
+            src="/images/logo-asada.png"
             alt="Logo de la ASADA Gamalotal"
             width={40}
             height={40}

@@ -56,7 +56,7 @@ export default function LandingPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 via-primary/5 to-white">
         <div className="mx-auto max-w-3xl px-4 pb-28 pt-20 text-center sm:px-6 sm:pb-32 sm:pt-24">
           <Image
-            src="/logo-asada.png"
+            src="/images/logo-asada.png"
             alt="Logo de la ASADA Gamalotal"
             width={112}
             height={112}

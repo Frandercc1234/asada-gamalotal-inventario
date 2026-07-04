@@ -17,7 +17,7 @@ export default function PublicLayout({
           <div>
             <div className="flex items-center gap-2.5">
               <Image
-                src="/logo-asada.png"
+                src="/images/logo-asada.png"
                 alt="Logo de la ASADA Gamalotal"
                 width={40}
                 height={40}

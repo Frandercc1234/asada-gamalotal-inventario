@@ -26,7 +26,7 @@ export default function LoginPage() {
         <div className="relative z-10">
           <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white p-2.5 shadow-lg shadow-black/10">
             <Image
-              src="/logo-asada.png"
+              src="/images/logo-asada.png"
               alt="Logo de la ASADA Gamalotal"
               width={80}
               height={80}
@@ -64,7 +64,7 @@ export default function LoginPage() {
           {/* Marca compacta para móvil (el panel lateral está oculto) */}
           <div className="mb-8 flex flex-col items-center text-center lg:hidden">
             <Image
-              src="/logo-asada.png"
+              src="/images/logo-asada.png"
               alt="Logo de la ASADA Gamalotal"
               width={64}
               height={64}

@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "skills": {
+    "design-taste-frontend": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "899b84384f74f540ea5284d9b2e9234e050998b42eacc805410b518d4226c0b3"
+    },
+    "emil-design-eng": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "computedHash": "ac3fc5b4e206488ffc408a2806f829bb2e5eaf518fded09be34790685c2b3a0d"
+    },
+    "firebase-security-rules-auditor": {
+      "source": "firebase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/firebase-security-rules-auditor/SKILL.md",
+      "computedHash": "0ef93a495615c8fb4db2458e526897a9e7e58c7efca4fdb76564a0962fef5d43"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "ac7d37b9e6dc9bdbb9b1ebd54368a3fab81920487eda3b6c109cf48b958a78dc"
+    },
+    "implementing-agent-modes": {
+      "source": "posthog/posthog",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/implementing-agent-modes/SKILL.md",
+      "computedHash": "018b7b620294760794bd2250e5daf570aeef2da1ad64767f3cd669fad1d326ee"
+    },
+    "napkin": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/napkin/SKILL.md",
+      "computedHash": "774d8b80d2f5440cdf8e2668520563ce7df3e3ca2d0db52190e1931ab4c6d778"
+    },
+    "requesting-code-review": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/requesting-code-review/SKILL.md",
+      "computedHash": "cde520e9118d7e6b74b5ab0123cff2f68d9c07bddb3f82c997753b6126600aed"
+    }
+  }
+}

@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter);
+
+  --color-primary: oklch(59% 0.14 237);
+  --color-primary-hover: oklch(52% 0.14 237);
+  --color-surface: oklch(98.5% 0.002 247);
+  --color-border: oklch(92.9% 0.006 264);
+  --color-text-primary: oklch(20.8% 0.02 264);
+  --color-text-secondary: oklch(55.4% 0.02 264);
+  --color-success: oklch(52.7% 0.15 150);
+  --color-success-bg: oklch(96.2% 0.03 150);
+  --color-warning: oklch(55% 0.16 70);
+  --color-warning-bg: oklch(96.5% 0.04 70);
+  --color-danger: oklch(51% 0.19 25);
+  --color-danger-bg: oklch(96% 0.03 25);
+}
+
+body {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-overlay-in {
+  animation: overlay-in 150ms ease-out;
+}
+
+.animate-modal-in {
+  animation: modal-in 180ms ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 200ms ease-out;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-overlay-in,
+  .animate-modal-in,
+  .animate-slide-in-left {
+    animation: none;
+  }
+}

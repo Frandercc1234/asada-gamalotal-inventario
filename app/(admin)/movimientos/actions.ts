@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { mensajeErrorDb } from "@/lib/utils";
 import type { TipoMovimiento } from "@/types/database.types";
 
 // El stock se ajusta ÚNICAMENTE a través de esta RPC (transacción atómica
@@ -23,7 +24,7 @@ export async function registrarMovimiento(input: {
     p_motivo: input.motivo ?? "",
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: mensajeErrorDb(error) };
 
   revalidatePath("/movimientos");
   revalidatePath("/productos");

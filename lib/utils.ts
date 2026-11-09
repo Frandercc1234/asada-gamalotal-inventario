@@ -23,7 +23,10 @@ export function mensajeErrorDb(error: {
   if (error.code === "23514") return "Los datos no son válidos.";
   if (error.code === "42501" || error.message.includes("row-level security"))
     return "No tenés permisos para esta acción.";
-  return error.message;
+  // P0001: raise exception de las RPC, con mensajes escritos para el usuario.
+  if (error.code === "P0001") return error.message;
+  console.error(error);
+  return "No se pudo completar la operación. Intentá de nuevo.";
 }
 
 export function formatFecha(fecha: string | Date): string {

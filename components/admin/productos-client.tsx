@@ -15,7 +15,8 @@ import { Card, Badge } from "@/components/ui/card";
 import { Table, TableHead, TableBody, TableRow, Th, Td } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Modal } from "@/components/ui/modal";
-import { formatColones } from "@/lib/utils";
+import { Paginacion } from "@/components/ui/pagination";
+import { formatColones, paginar } from "@/lib/utils";
 import type { Producto } from "@/types/database.types";
 
 type ProductoRow = Producto & {
@@ -61,6 +62,7 @@ export function ProductosClient({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busqueda, setBusqueda] = useState("");
+  const [pagina, setPagina] = useState(1);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [form, setForm] = useState<FormState>(FORM_VACIO);
@@ -72,6 +74,7 @@ export function ProductosClient({
       p.nombre.toLowerCase().includes(q) || p.codigo.toLowerCase().includes(q)
     );
   });
+  const paginados = paginar(filtrados, pagina);
 
   function abrirNuevo() {
     setEditandoId(null);
@@ -145,7 +148,10 @@ export function ProductosClient({
       <Input
         placeholder="Buscar por nombre o código..."
         value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
+        onChange={(e) => {
+          setBusqueda(e.target.value);
+          setPagina(1);
+        }}
         className="max-w-sm"
       />
 
@@ -174,7 +180,7 @@ export function ProductosClient({
               </tr>
             </TableHead>
             <TableBody>
-              {filtrados.map((p) => {
+              {paginados.items.map((p) => {
                 const bajo = p.stock_actual <= p.stock_minimo;
                 return (
                   <TableRow key={p.id}>
@@ -221,6 +227,7 @@ export function ProductosClient({
             </TableBody>
           </Table>
         )}
+        <Paginacion pagina={paginados.pagina} total={filtrados.length} onCambiar={setPagina} />
       </Card>
 
       <Modal

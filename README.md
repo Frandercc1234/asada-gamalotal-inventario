@@ -2,6 +2,8 @@
 
 Aplicación web para administrar el inventario de una ASADA (acueducto rural comunitario de Costa Rica): qué materiales hay, qué entró, qué salió y qué está por agotarse. Incluye una página pública informativa y un panel interno para el personal.
 
+**Sitio publicado:** [asada-gamalotal-inventario.vercel.app](https://asada-gamalotal-inventario.vercel.app/)
+
 ## El problema
 
 El personal de una ASADA necesita saber con certeza cuánto material tiene y quién lo movió, muchas veces desde el celular y sin conocimientos técnicos. Si cualquiera puede editar las existencias a mano, el número deja de ser confiable.

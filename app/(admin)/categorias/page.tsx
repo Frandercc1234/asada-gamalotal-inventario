@@ -8,7 +8,8 @@ import { Input, Label } from "@/components/ui/input";
 import { Card, Badge } from "@/components/ui/card";
 import { Table, TableHead, TableBody, TableRow, Th, Td } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { mensajeErrorDb } from "@/lib/utils";
+import { Paginacion } from "@/components/ui/pagination";
+import { leerPagina, mensajeErrorDb, paginar } from "@/lib/utils";
 
 async function crearCategoria(formData: FormData) {
   "use server";
@@ -39,22 +40,23 @@ async function toggleCategoria(formData: FormData) {
     redirect(`/categorias?error=${encodeURIComponent(mensajeErrorDb(error))}`);
   }
   revalidatePath("/categorias");
-  redirect("/categorias");
+  redirect(`/categorias?pagina=${leerPagina(String(formData.get("pagina")))}`);
 }
 
 export default async function CategoriasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; pagina?: string }>;
 }) {
   const supabase = await createClient();
-  const [{ data: categorias }, perfil, { error: errorParam }] =
+  const [{ data: categorias }, perfil, { error: errorParam, pagina: paginaParam }] =
     await Promise.all([
       supabase.from("categorias").select("*").order("nombre"),
       getPerfilActual(),
       searchParams,
     ]);
   const esAdmin = perfil?.rol === "admin";
+  const paginados = paginar(categorias ?? [], leerPagina(paginaParam));
 
   return (
     <div className="space-y-6">
@@ -107,7 +109,7 @@ export default async function CategoriasPage({
               </tr>
             </TableHead>
             <TableBody>
-              {(categorias ?? []).map((c) => (
+              {paginados.items.map((c) => (
                 <TableRow key={c.id}>
                   <Td className="max-lg:font-medium">{c.nombre}</Td>
                   <Td className="text-text-secondary">
@@ -122,6 +124,7 @@ export default async function CategoriasPage({
                     <Td className="text-right">
                       <form action={toggleCategoria}>
                         <input type="hidden" name="id" value={c.id} />
+                        <input type="hidden" name="pagina" value={paginados.pagina} />
                         <input
                           type="hidden"
                           name="activo"
@@ -138,6 +141,7 @@ export default async function CategoriasPage({
             </TableBody>
           </Table>
         )}
+        <Paginacion pagina={paginados.pagina} total={(categorias ?? []).length} ruta="/categorias" />
       </Card>
     </div>
   );

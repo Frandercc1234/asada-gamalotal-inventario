@@ -8,7 +8,8 @@ import { Select } from "@/components/ui/input";
 import { Card, Badge } from "@/components/ui/card";
 import { Table, TableHead, TableBody, TableRow, Th, Td } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { formatFecha, mensajeErrorDb } from "@/lib/utils";
+import { Paginacion } from "@/components/ui/pagination";
+import { formatFecha, leerPagina, mensajeErrorDb, paginar } from "@/lib/utils";
 import type { RolUsuario } from "@/types/database.types";
 
 function fallar(mensaje: string): never {
@@ -30,7 +31,7 @@ async function cambiarRol(formData: FormData) {
   const { error } = await supabase.from("profiles").update({ rol }).eq("id", id);
   if (error) fallar(mensajeErrorDb(error));
   revalidatePath("/usuarios");
-  redirect("/usuarios");
+  redirect(`/usuarios?pagina=${leerPagina(String(formData.get("pagina")))}`);
 }
 
 async function toggleActivo(formData: FormData) {
@@ -49,22 +50,23 @@ async function toggleActivo(formData: FormData) {
     .eq("id", id);
   if (error) fallar(mensajeErrorDb(error));
   revalidatePath("/usuarios");
-  redirect("/usuarios");
+  redirect(`/usuarios?pagina=${leerPagina(String(formData.get("pagina")))}`);
 }
 
 export default async function UsuariosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; pagina?: string }>;
 }) {
   const perfil = await getPerfilActual();
   if (perfil?.rol !== "admin") redirect("/dashboard");
 
   const supabase = await createClient();
-  const [{ data: usuarios }, { error: errorParam }] = await Promise.all([
+  const [{ data: usuarios }, { error: errorParam, pagina: paginaParam }] = await Promise.all([
     supabase.from("profiles").select("*").order("created_at"),
     searchParams,
   ]);
+  const paginados = paginar(usuarios ?? [], leerPagina(paginaParam));
 
   return (
     <div className="space-y-6">
@@ -95,7 +97,7 @@ export default async function UsuariosPage({
               </tr>
             </TableHead>
             <TableBody>
-              {(usuarios ?? []).map((u) => {
+              {paginados.items.map((u) => {
                 const esPropio = u.id === perfil.id;
                 return (
                   <TableRow key={u.id}>
@@ -116,6 +118,7 @@ export default async function UsuariosPage({
                           className="flex items-center gap-2"
                         >
                           <input type="hidden" name="id" value={u.id} />
+                          <input type="hidden" name="pagina" value={paginados.pagina} />
                           <Select
                             name="rol"
                             defaultValue={u.rol}
@@ -143,6 +146,7 @@ export default async function UsuariosPage({
                       {!esPropio && (
                         <form action={toggleActivo}>
                           <input type="hidden" name="id" value={u.id} />
+                          <input type="hidden" name="pagina" value={paginados.pagina} />
                           <input
                             type="hidden"
                             name="activo"
@@ -160,6 +164,7 @@ export default async function UsuariosPage({
             </TableBody>
           </Table>
         )}
+        <Paginacion pagina={paginados.pagina} total={(usuarios ?? []).length} ruta="/usuarios" />
       </Card>
     </div>
   );

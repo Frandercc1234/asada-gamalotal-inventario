@@ -10,7 +10,8 @@ import { Table, TableHead, TableBody, TableRow, Th, Td } from "@/components/ui/t
 import { EmptyState } from "@/components/ui/empty-state";
 import { exportarPDF } from "@/lib/export/pdf";
 import { exportarExcel } from "@/lib/export/excel";
-import { formatColones, formatFecha } from "@/lib/utils";
+import { Paginacion } from "@/components/ui/pagination";
+import { formatColones, formatFecha, paginar } from "@/lib/utils";
 
 type ProductoRow = {
   codigo: string;
@@ -41,6 +42,7 @@ export function ReportesClient({
   movimientos: MovimientoRow[];
 }) {
   const [reporte, setReporte] = useState<Reporte>("inventario");
+  const [pagina, setPagina] = useState(1);
 
   const columnasInv = [
     "Código",
@@ -81,6 +83,8 @@ export function ReportesClient({
   const columnas = esInv ? columnasInv : columnasMov;
   const filas = esInv ? filasInv : filasMov;
   const archivo = esInv ? "inventario" : "movimientos";
+  // La tabla se pagina; las exportaciones siguen usando todas las filas.
+  const paginados = paginar(filas, pagina);
 
   function descargarPDF() {
     exportarPDF(titulo, columnas, filas, archivo);
@@ -106,7 +110,10 @@ export function ReportesClient({
             <Label>Reporte</Label>
             <Select
               value={reporte}
-              onChange={(e) => setReporte(e.target.value as Reporte)}
+              onChange={(e) => {
+                setReporte(e.target.value as Reporte);
+                setPagina(1);
+              }}
               className="w-56"
             >
               <option value="inventario">Inventario actual</option>
@@ -139,7 +146,7 @@ export function ReportesClient({
               </tr>
             </TableHead>
             <TableBody>
-              {filas.map((fila, i) => (
+              {paginados.items.map((fila, i) => (
                 <TableRow key={i}>
                   {fila.map((celda, j) => (
                     <Td key={j} label={columnas[j]}>{celda}</Td>
@@ -149,6 +156,7 @@ export function ReportesClient({
             </TableBody>
           </Table>
         )}
+        <Paginacion pagina={paginados.pagina} total={filas.length} onCambiar={setPagina} />
       </Card>
     </div>
   );

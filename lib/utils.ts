@@ -29,6 +29,23 @@ export function mensajeErrorDb(error: {
   return "No se pudo completar la operación. Intentá de nuevo.";
 }
 
+export const POR_PAGINA = 5;
+
+export function leerPagina(valor?: string): number {
+  const pagina = Number(valor);
+  return Number.isInteger(pagina) && pagina > 0 ? pagina : 1;
+}
+
+// Recorta una lista ya cargada; una página fuera de rango va a la última.
+export function paginar<T>(items: T[], pedida: number) {
+  const totalPaginas = Math.max(1, Math.ceil(items.length / POR_PAGINA));
+  const pagina = Math.min(Math.max(1, pedida), totalPaginas);
+  return {
+    pagina,
+    items: items.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA),
+  };
+}
+
 export function formatFecha(fecha: string | Date): string {
   const d = typeof fecha === "string" ? new Date(fecha) : fecha;
   return new Intl.DateTimeFormat("es-CR", {

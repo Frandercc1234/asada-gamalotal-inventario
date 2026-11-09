@@ -8,7 +8,8 @@ import { Input, Label } from "@/components/ui/input";
 import { Card, Badge } from "@/components/ui/card";
 import { Table, TableHead, TableBody, TableRow, Th, Td } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { mensajeErrorDb } from "@/lib/utils";
+import { Paginacion } from "@/components/ui/pagination";
+import { leerPagina, mensajeErrorDb, paginar } from "@/lib/utils";
 
 async function crearProveedor(formData: FormData) {
   "use server";
@@ -41,22 +42,23 @@ async function toggleProveedor(formData: FormData) {
     redirect(`/proveedores?error=${encodeURIComponent(mensajeErrorDb(error))}`);
   }
   revalidatePath("/proveedores");
-  redirect("/proveedores");
+  redirect(`/proveedores?pagina=${leerPagina(String(formData.get("pagina")))}`);
 }
 
 export default async function ProveedoresPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; pagina?: string }>;
 }) {
   const supabase = await createClient();
-  const [{ data: proveedores }, perfil, { error: errorParam }] =
+  const [{ data: proveedores }, perfil, { error: errorParam, pagina: paginaParam }] =
     await Promise.all([
       supabase.from("proveedores").select("*").order("nombre"),
       getPerfilActual(),
       searchParams,
     ]);
   const esAdmin = perfil?.rol === "admin";
+  const paginados = paginar(proveedores ?? [], leerPagina(paginaParam));
 
   return (
     <div className="space-y-6">
@@ -121,7 +123,7 @@ export default async function ProveedoresPage({
               </tr>
             </TableHead>
             <TableBody>
-              {(proveedores ?? []).map((p) => (
+              {paginados.items.map((p) => (
                 <TableRow key={p.id}>
                   <Td className="max-lg:font-medium">{p.nombre}</Td>
                   <Td label="Contacto" className="text-text-secondary">{p.contacto ?? "—"}</Td>
@@ -136,6 +138,7 @@ export default async function ProveedoresPage({
                     <Td className="text-right">
                       <form action={toggleProveedor}>
                         <input type="hidden" name="id" value={p.id} />
+                        <input type="hidden" name="pagina" value={paginados.pagina} />
                         <input
                           type="hidden"
                           name="activo"
@@ -152,6 +155,7 @@ export default async function ProveedoresPage({
             </TableBody>
           </Table>
         )}
+        <Paginacion pagina={paginados.pagina} total={(proveedores ?? []).length} ruta="/proveedores" />
       </Card>
     </div>
   );

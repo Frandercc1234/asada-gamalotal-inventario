@@ -10,6 +10,7 @@ import { Input, Label, Select } from "@/components/ui/input";
 import { Card, Badge } from "@/components/ui/card";
 import { Table, TableHead, TableBody, TableRow, Th, Td } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Paginacion } from "@/components/ui/pagination";
 import { formatFecha } from "@/lib/utils";
 import type { Movimiento, TipoMovimiento } from "@/types/database.types";
 
@@ -29,9 +30,13 @@ type MovimientoRow = Movimiento & {
 export function MovimientosClient({
   productos,
   movimientos,
+  pagina,
+  total,
 }: {
   productos: ProductoOpcion[];
   movimientos: MovimientoRow[];
+  pagina: number;
+  total: number;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -58,7 +63,9 @@ export function MovimientosClient({
       }
       setCantidad("");
       setMotivo("");
-      router.refresh();
+      // El movimiento nuevo aparece primero: se vuelve a la página 1.
+      if (pagina > 1) router.push("/movimientos");
+      else router.refresh();
     });
   }
 
@@ -172,6 +179,7 @@ export function MovimientosClient({
             </TableBody>
           </Table>
         )}
+        <Paginacion pagina={pagina} total={total} ruta="/movimientos" />
       </Card>
     </div>
   );

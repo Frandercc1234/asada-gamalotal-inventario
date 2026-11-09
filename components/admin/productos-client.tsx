@@ -17,6 +17,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Modal } from "@/components/ui/modal";
 import { Paginacion } from "@/components/ui/pagination";
 import { formatColones, paginar } from "@/lib/utils";
+import { avisoError, avisoExito } from "@/lib/alertas";
 import type { Producto } from "@/types/database.types";
 
 type ProductoRow = Producto & {
@@ -126,6 +127,7 @@ export function ProductosClient({
         return;
       }
       setModalAbierto(false);
+      avisoExito(editandoId ? "Producto actualizado" : "Producto creado");
       router.refresh();
     });
   }
@@ -133,7 +135,12 @@ export function ProductosClient({
   function cambiarActivo(p: ProductoRow) {
     startTransition(async () => {
       const res = await desactivarProducto(p.id, !p.activo);
-      if (!res.error) router.refresh();
+      if (res.error) {
+        avisoError(res.error);
+        return;
+      }
+      avisoExito(p.activo ? "Producto desactivado" : "Producto activado");
+      router.refresh();
     });
   }
 

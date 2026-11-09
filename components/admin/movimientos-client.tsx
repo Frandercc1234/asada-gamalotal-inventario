@@ -12,6 +12,7 @@ import { Table, TableHead, TableBody, TableRow, Th, Td } from "@/components/ui/t
 import { EmptyState } from "@/components/ui/empty-state";
 import { Paginacion } from "@/components/ui/pagination";
 import { formatFecha } from "@/lib/utils";
+import { avisoExito } from "@/lib/alertas";
 import type { Movimiento, TipoMovimiento } from "@/types/database.types";
 
 type ProductoOpcion = {
@@ -63,6 +64,7 @@ export function MovimientosClient({
       }
       setCantidad("");
       setMotivo("");
+      avisoExito(tipo === "entrada" ? "Entrada registrada" : "Salida registrada");
       // El movimiento nuevo aparece primero: se vuelve a la página 1.
       if (pagina > 1) router.push("/movimientos");
       else router.refresh();

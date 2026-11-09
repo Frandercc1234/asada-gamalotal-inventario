@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient, getPerfilActual } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/admin/sidebar";
+import { AvisoUrl } from "@/components/admin/aviso-url";
 
 export default async function AdminLayout({
   children,
@@ -18,6 +20,9 @@ export default async function AdminLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-surface md:flex-row">
+      <Suspense fallback={null}>
+        <AvisoUrl />
+      </Suspense>
       <Sidebar nombre={perfil.nombre} rol={perfil.rol} />
       <div className="flex-1">
         <main className="mx-auto max-w-6xl p-4 sm:p-8">{children}</main>

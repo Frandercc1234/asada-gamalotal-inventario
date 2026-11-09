@@ -31,7 +31,7 @@ async function cambiarRol(formData: FormData) {
   const { error } = await supabase.from("profiles").update({ rol }).eq("id", id);
   if (error) fallar(mensajeErrorDb(error));
   revalidatePath("/usuarios");
-  redirect(`/usuarios?pagina=${leerPagina(String(formData.get("pagina")))}`);
+  redirect(`/usuarios?pagina=${leerPagina(String(formData.get("pagina")))}&ok=rol_actualizado`);
 }
 
 async function toggleActivo(formData: FormData) {
@@ -50,7 +50,9 @@ async function toggleActivo(formData: FormData) {
     .eq("id", id);
   if (error) fallar(mensajeErrorDb(error));
   revalidatePath("/usuarios");
-  redirect(`/usuarios?pagina=${leerPagina(String(formData.get("pagina")))}`);
+  redirect(
+    `/usuarios?pagina=${leerPagina(String(formData.get("pagina")))}&ok=${activo ? "usuario_desactivado" : "usuario_activado"}`,
+  );
 }
 
 export default async function UsuariosPage({

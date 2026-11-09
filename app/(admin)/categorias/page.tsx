@@ -24,7 +24,7 @@ async function crearCategoria(formData: FormData) {
     redirect(`/categorias?error=${encodeURIComponent(mensajeErrorDb(error))}`);
   }
   revalidatePath("/categorias");
-  redirect("/categorias");
+  redirect("/categorias?ok=categoria_creada");
 }
 
 async function toggleCategoria(formData: FormData) {
@@ -40,7 +40,9 @@ async function toggleCategoria(formData: FormData) {
     redirect(`/categorias?error=${encodeURIComponent(mensajeErrorDb(error))}`);
   }
   revalidatePath("/categorias");
-  redirect(`/categorias?pagina=${leerPagina(String(formData.get("pagina")))}`);
+  redirect(
+    `/categorias?pagina=${leerPagina(String(formData.get("pagina")))}&ok=${activo ? "categoria_desactivada" : "categoria_activada"}`,
+  );
 }
 
 export default async function CategoriasPage({

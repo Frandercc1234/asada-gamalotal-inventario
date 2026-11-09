@@ -26,7 +26,7 @@ async function crearProveedor(formData: FormData) {
     redirect(`/proveedores?error=${encodeURIComponent(mensajeErrorDb(error))}`);
   }
   revalidatePath("/proveedores");
-  redirect("/proveedores");
+  redirect("/proveedores?ok=proveedor_creado");
 }
 
 async function toggleProveedor(formData: FormData) {
@@ -42,7 +42,9 @@ async function toggleProveedor(formData: FormData) {
     redirect(`/proveedores?error=${encodeURIComponent(mensajeErrorDb(error))}`);
   }
   revalidatePath("/proveedores");
-  redirect(`/proveedores?pagina=${leerPagina(String(formData.get("pagina")))}`);
+  redirect(
+    `/proveedores?pagina=${leerPagina(String(formData.get("pagina")))}&ok=${activo ? "proveedor_desactivado" : "proveedor_activado"}`,
+  );
 }
 
 export default async function ProveedoresPage({

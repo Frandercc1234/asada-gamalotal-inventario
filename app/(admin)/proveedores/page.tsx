@@ -1,9 +1,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { AlertCircle, Truck } from "lucide-react";
 import { createClient, getPerfilActual } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/admin/page-header";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClasses } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { Card, Badge } from "@/components/ui/card";
 import { Table, TableHead, TableBody, TableRow, Th, Td } from "@/components/ui/table";
@@ -29,6 +30,30 @@ async function crearProveedor(formData: FormData) {
   redirect("/proveedores?ok=proveedor_creado");
 }
 
+async function editarProveedor(formData: FormData) {
+  "use server";
+  const id = Number(formData.get("id"));
+  const nombre = String(formData.get("nombre") ?? "").trim();
+  if (!nombre) return;
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("proveedores")
+    .update({
+      nombre,
+      contacto: String(formData.get("contacto") ?? "").trim() || null,
+      telefono: String(formData.get("telefono") ?? "").trim() || null,
+      email: String(formData.get("email") ?? "").trim() || null,
+    })
+    .eq("id", id);
+  if (error) {
+    redirect(
+      `/proveedores?editar=${id}&error=${encodeURIComponent(mensajeErrorDb(error))}`,
+    );
+  }
+  revalidatePath("/proveedores");
+  redirect(`/proveedores?pagina=${leerPagina(String(formData.get("pagina")))}&ok=proveedor_actualizado`);
+}
+
 async function toggleProveedor(formData: FormData) {
   "use server";
   const id = Number(formData.get("id"));
@@ -50,10 +75,10 @@ async function toggleProveedor(formData: FormData) {
 export default async function ProveedoresPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; pagina?: string }>;
+  searchParams: Promise<{ error?: string; pagina?: string; editar?: string }>;
 }) {
   const supabase = await createClient();
-  const [{ data: proveedores }, perfil, { error: errorParam, pagina: paginaParam }] =
+  const [{ data: proveedores }, perfil, { error: errorParam, pagina: paginaParam, editar }] =
     await Promise.all([
       supabase.from("proveedores").select("*").order("nombre"),
       getPerfilActual(),
@@ -61,6 +86,9 @@ export default async function ProveedoresPage({
     ]);
   const esAdmin = perfil?.rol === "admin";
   const paginados = paginar(proveedores ?? [], leerPagina(paginaParam));
+  const editando = esAdmin
+    ? (proveedores ?? []).find((p) => p.id === Number(editar))
+    : undefined;
 
   return (
     <div className="space-y-6">
@@ -78,28 +106,64 @@ export default async function ProveedoresPage({
 
       {esAdmin && (
         <Card>
+          {editando && (
+            <h2 className="mb-3 font-semibold tracking-tight text-text-primary">
+              Editar proveedor
+            </h2>
+          )}
           <form
-            action={crearProveedor}
+            key={editando?.id ?? "nuevo"}
+            action={editando ? editarProveedor : crearProveedor}
             className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end"
           >
+            {editando && (
+              <>
+                <input type="hidden" name="id" value={editando.id} />
+                <input type="hidden" name="pagina" value={paginados.pagina} />
+              </>
+            )}
             <div>
               <Label htmlFor="prov-nombre">Nombre</Label>
-              <Input id="prov-nombre" name="nombre" required />
+              <Input
+                id="prov-nombre"
+                name="nombre"
+                defaultValue={editando?.nombre}
+                required
+              />
             </div>
             <div>
               <Label htmlFor="prov-contacto">Contacto</Label>
-              <Input id="prov-contacto" name="contacto" />
+              <Input
+                id="prov-contacto"
+                name="contacto"
+                defaultValue={editando?.contacto ?? ""}
+              />
             </div>
             <div>
               <Label htmlFor="prov-telefono">Teléfono</Label>
-              <Input id="prov-telefono" name="telefono" type="tel" />
+              <Input
+                id="prov-telefono"
+                name="telefono"
+                type="tel"
+                defaultValue={editando?.telefono ?? ""}
+              />
             </div>
             <div>
               <Label htmlFor="prov-email">Email</Label>
-              <Input id="prov-email" name="email" type="email" />
+              <Input
+                id="prov-email"
+                name="email"
+                type="email"
+                defaultValue={editando?.email ?? ""}
+              />
             </div>
-            <div className="lg:col-span-4">
-              <Button type="submit">Agregar</Button>
+            <div className="flex gap-2 lg:col-span-4">
+              <Button type="submit">{editando ? "Guardar" : "Agregar"}</Button>
+              {editando && (
+                <Link href="/proveedores" className={buttonClasses("ghost")}>
+                  Cancelar
+                </Link>
+              )}
             </div>
           </form>
         </Card>
@@ -138,18 +202,26 @@ export default async function ProveedoresPage({
                   </Td>
                   {esAdmin && (
                     <Td className="text-right">
-                      <form action={toggleProveedor}>
-                        <input type="hidden" name="id" value={p.id} />
-                        <input type="hidden" name="pagina" value={paginados.pagina} />
-                        <input
-                          type="hidden"
-                          name="activo"
-                          value={String(p.activo)}
-                        />
-                        <Button variant="ghost" size="sm" type="submit">
-                          {p.activo ? "Desactivar" : "Activar"}
-                        </Button>
-                      </form>
+                      <div className="flex justify-end gap-2">
+                        <Link
+                          href={`/proveedores?editar=${p.id}&pagina=${paginados.pagina}`}
+                          className={buttonClasses("secondary", "sm")}
+                        >
+                          Editar
+                        </Link>
+                        <form action={toggleProveedor}>
+                          <input type="hidden" name="id" value={p.id} />
+                          <input type="hidden" name="pagina" value={paginados.pagina} />
+                          <input
+                            type="hidden"
+                            name="activo"
+                            value={String(p.activo)}
+                          />
+                          <Button variant="ghost" size="sm" type="submit">
+                            {p.activo ? "Desactivar" : "Activar"}
+                          </Button>
+                        </form>
+                      </div>
                     </Td>
                   )}
                 </TableRow>

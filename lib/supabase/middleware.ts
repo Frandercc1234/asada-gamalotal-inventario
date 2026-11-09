@@ -4,7 +4,12 @@ import type { Database } from "@/types/database.types";
 
 // Rutas accesibles sin sesión.
 function esRutaPublica(path: string) {
-  return path === "/" || path.startsWith("/login") || path === "/api/salud";
+  return (
+    path === "/" ||
+    path.startsWith("/login") ||
+    path.startsWith("/auth/") ||
+    path === "/api/salud"
+  );
 }
 
 export async function updateSession(request: NextRequest) {

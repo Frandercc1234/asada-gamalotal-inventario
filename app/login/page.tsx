@@ -130,6 +130,11 @@ export default function LoginPage() {
             </Button>
           </form>
 
+          <p className="mt-4 text-center text-sm text-text-secondary">
+            Si olvidaste tu contraseña, pedile a un administrador que la
+            restablezca.
+          </p>
+
           <Link
             href="/"
             className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary lg:hidden"

@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeftRight } from "lucide-react";
-import { registrarMovimiento } from "@/app/(admin)/movimientos/actions";
+import { anularMovimiento, registrarMovimiento } from "@/app/(admin)/movimientos/actions";
+import { FiltroFechas } from "@/components/admin/filtro-fechas";
 import { PageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import { Table, TableHead, TableBody, TableRow, Th, Td } from "@/components/ui/t
 import { EmptyState } from "@/components/ui/empty-state";
 import { Paginacion } from "@/components/ui/pagination";
 import { formatFecha } from "@/lib/utils";
-import { avisoExito } from "@/lib/alertas";
+import { avisoError, avisoExito, pedirMotivoAnulacion } from "@/lib/alertas";
 import type { Movimiento, TipoMovimiento } from "@/types/database.types";
 
 type ProductoOpcion = {
@@ -31,13 +32,21 @@ type MovimientoRow = Movimiento & {
 export function MovimientosClient({
   productos,
   movimientos,
+  anulados,
+  esAdmin,
   pagina,
   total,
+  desde,
+  hasta,
 }: {
   productos: ProductoOpcion[];
   movimientos: MovimientoRow[];
+  anulados: number[];
+  esAdmin: boolean;
   pagina: number;
   total: number;
+  desde: string;
+  hasta: string;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -48,6 +57,27 @@ export function MovimientosClient({
   const [error, setError] = useState<string | null>(null);
 
   const seleccionado = productos.find((p) => p.id === Number(productoId));
+
+  const filtros = new URLSearchParams({
+    ...(desde && { desde }),
+    ...(hasta && { hasta }),
+  }).toString();
+
+  async function anular(m: MovimientoRow) {
+    const motivo = await pedirMotivoAnulacion(
+      `${m.tipo} de ${m.cantidad} · ${m.productos?.nombre ?? "producto"}. Se registrará el movimiento contrario.`,
+    );
+    if (!motivo) return;
+    startTransition(async () => {
+      const res = await anularMovimiento(m.id, motivo);
+      if (res.error) {
+        avisoError(res.error);
+        return;
+      }
+      avisoExito("Movimiento anulado");
+      router.refresh();
+    });
+  }
 
   function enviar() {
     setError(null);
@@ -138,15 +168,21 @@ export function MovimientosClient({
         </div>
       </Card>
 
+      <FiltroFechas ruta="/movimientos" desde={desde} hasta={hasta} />
+
       <Card className="overflow-hidden p-0">
         {movimientos.length === 0 ? (
           <EmptyState
             icon={ArrowLeftRight}
             title="Sin movimientos"
-            description="Todavía no se ha registrado ningún movimiento."
+            description={
+              desde || hasta
+                ? "No hay movimientos en ese rango de fechas."
+                : "Todavía no se ha registrado ningún movimiento."
+            }
           />
         ) : (
-          <Table className="lg:min-w-[720px]">
+          <Table className="lg:min-w-[820px]">
             <TableHead>
               <tr>
                 <Th>Fecha</Th>
@@ -156,6 +192,7 @@ export function MovimientosClient({
                 <Th>Stock resultante</Th>
                 <Th>Usuario</Th>
                 <Th>Motivo</Th>
+                {esAdmin && <Th />}
               </tr>
             </TableHead>
             <TableBody>
@@ -166,9 +203,13 @@ export function MovimientosClient({
                   </Td>
                   <Td className="max-lg:font-medium">{m.productos?.nombre ?? "—"}</Td>
                   <Td label="Tipo">
-                    <Badge tone={m.tipo === "entrada" ? "green" : "amber"}>
-                      {m.tipo}
-                    </Badge>
+                    <span className="inline-flex flex-wrap gap-1">
+                      <Badge tone={m.tipo === "entrada" ? "green" : "amber"}>
+                        {m.tipo}
+                      </Badge>
+                      {m.anula_a && <Badge tone="gray">anulación</Badge>}
+                      {anulados.includes(m.id) && <Badge tone="red">anulado</Badge>}
+                    </span>
                   </Td>
                   <Td label="Cantidad" numeric>{m.cantidad}</Td>
                   <Td label="Stock resultante" numeric>{m.stock_resultante}</Td>
@@ -176,12 +217,26 @@ export function MovimientosClient({
                     {m.profiles?.nombre ?? "—"}
                   </Td>
                   <Td label="Motivo" className="text-text-secondary">{m.motivo ?? "—"}</Td>
+                  {esAdmin && (
+                    <Td className="text-right">
+                      {!m.anula_a && !anulados.includes(m.id) && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={pending}
+                          onClick={() => anular(m)}
+                        >
+                          Anular
+                        </Button>
+                      )}
+                    </Td>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
-        <Paginacion pagina={pagina} total={total} ruta="/movimientos" />
+        <Paginacion pagina={pagina} total={total} ruta={filtros ? `/movimientos?${filtros}` : "/movimientos"} />
       </Card>
     </div>
   );

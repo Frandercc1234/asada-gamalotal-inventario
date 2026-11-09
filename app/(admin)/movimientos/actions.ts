@@ -7,6 +7,23 @@ import type { TipoMovimiento } from "@/types/database.types";
 
 // El stock se ajusta ÚNICAMENTE a través de esta RPC (transacción atómica
 // que valida stock en salidas). Nunca se edita productos.stock_actual a mano.
+export async function anularMovimiento(
+  id: number,
+  motivo: string,
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("anular_movimiento", {
+    p_movimiento_id: id,
+    p_motivo: motivo,
+  });
+  if (error) return { error: mensajeErrorDb(error) };
+
+  revalidatePath("/movimientos");
+  revalidatePath("/productos");
+  revalidatePath("/dashboard");
+  return {};
+}
+
 export async function registrarMovimiento(input: {
   producto_id: number;
   tipo: TipoMovimiento;

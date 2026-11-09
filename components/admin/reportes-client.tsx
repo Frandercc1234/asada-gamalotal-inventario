@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FileBarChart } from "lucide-react";
+import { FiltroFechas } from "@/components/admin/filtro-fechas";
 import { PageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { Select, Label } from "@/components/ui/input";
@@ -23,7 +24,7 @@ type ProductoRow = {
   categorias: { nombre: string } | null;
 };
 
-type MovimientoRow = {
+export type MovimientoRow = {
   created_at: string;
   tipo: string;
   cantidad: number;
@@ -37,11 +38,17 @@ type Reporte = "inventario" | "movimientos";
 export function ReportesClient({
   productos,
   movimientos,
+  reporteInicial,
+  desde,
+  hasta,
 }: {
   productos: ProductoRow[];
   movimientos: MovimientoRow[];
+  reporteInicial: Reporte;
+  desde: string;
+  hasta: string;
 }) {
-  const [reporte, setReporte] = useState<Reporte>("inventario");
+  const [reporte, setReporte] = useState<Reporte>(reporteInicial);
   const [pagina, setPagina] = useState(1);
 
   const columnasInv = [
@@ -79,7 +86,8 @@ export function ReportesClient({
   ]);
 
   const esInv = reporte === "inventario";
-  const titulo = esInv ? "Reporte de inventario" : "Reporte de movimientos";
+  const rangoTexto = desde || hasta ? ` (${desde || "inicio"} a ${hasta || "hoy"})` : "";
+  const titulo = esInv ? "Reporte de inventario" : `Reporte de movimientos${rangoTexto}`;
   const columnas = esInv ? columnasInv : columnasMov;
   const filas = esInv ? filasInv : filasMov;
   const archivo = esInv ? "inventario" : "movimientos";
@@ -128,6 +136,15 @@ export function ReportesClient({
           </Button>
         </div>
       </Card>
+
+      {!esInv && (
+        <FiltroFechas
+          ruta="/reportes"
+          desde={desde}
+          hasta={hasta}
+          ocultos={{ reporte: "movimientos" }}
+        />
+      )}
 
       <Card className="overflow-hidden p-0">
         {filas.length === 0 ? (

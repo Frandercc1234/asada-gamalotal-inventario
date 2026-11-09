@@ -7,12 +7,17 @@ import { avisoExito } from "@/lib/alertas";
 // Claves fijas: el texto del aviso nunca sale directamente de la URL.
 const MENSAJES: Record<string, string> = {
   categoria_creada: "Categoría agregada",
+  categoria_actualizada: "Categoría actualizada",
   categoria_activada: "Categoría activada",
   categoria_desactivada: "Categoría desactivada",
   proveedor_creado: "Proveedor agregado",
+  proveedor_actualizado: "Proveedor actualizado",
   proveedor_activado: "Proveedor activado",
   proveedor_desactivado: "Proveedor desactivado",
   rol_actualizado: "Rol actualizado",
+  usuario_creado: "Usuario creado",
+  clave_restablecida: "Contraseña restablecida",
+  clave_actualizada: "Contraseña actualizada",
   usuario_activado: "Usuario activado",
   usuario_desactivado: "Usuario desactivado",
 };

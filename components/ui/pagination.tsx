@@ -31,7 +31,7 @@ export function Paginacion({
     if (ruta && habilitado) {
       return (
         <Link
-          href={`${ruta}?pagina=${destino}`}
+          href={`${ruta}${ruta.includes("?") ? "&" : "?"}pagina=${destino}`}
           scroll={false}
           aria-label={etiqueta}
           className={buttonClasses("secondary", "sm")}

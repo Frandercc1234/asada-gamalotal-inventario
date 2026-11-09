@@ -46,6 +46,33 @@ export function paginar<T>(items: T[], pedida: number) {
   };
 }
 
+function fechaValida(valor?: string): string {
+  if (!valor || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) return "";
+  const fecha = new Date(`${valor}T00:00:00Z`);
+  return !Number.isNaN(fecha.getTime()) && fecha.toISOString().startsWith(valor)
+    ? valor
+    : "";
+}
+
+// Convierte fechas de un filtro en límites de Costa Rica (UTC-6);
+// `fin` es exclusivo para incluir todo el último día.
+export function rangoFechas(desdeParam?: string, hastaParam?: string) {
+  const desde = fechaValida(desdeParam);
+  const hasta = fechaValida(hastaParam);
+  let fin: string | null = null;
+  if (hasta) {
+    const siguiente = new Date(`${hasta}T00:00:00Z`);
+    siguiente.setUTCDate(siguiente.getUTCDate() + 1);
+    fin = `${siguiente.toISOString().slice(0, 10)}T00:00:00-06:00`;
+  }
+  return {
+    desde,
+    hasta,
+    inicio: desde ? `${desde}T00:00:00-06:00` : null,
+    fin,
+  };
+}
+
 export function formatFecha(fecha: string | Date): string {
   const d = typeof fecha === "string" ? new Date(fecha) : fecha;
   return new Intl.DateTimeFormat("es-CR", {

@@ -14,10 +14,10 @@ Por eso, en este sistema el stock no se edita: cambia solamente al registrar una
 
 - Dashboard con valor del inventario, alertas y gráfico de entradas y salidas de los últimos 30 días.
 - Gestión de productos, categorías y proveedores.
-- Registro de entradas y salidas con validación de existencias.
+- Registro de entradas y salidas con validación de existencias, y anulación con historial completo.
 - Alertas de productos con stock igual o menor al mínimo.
-- Reportes de inventario y movimientos exportables a PDF y Excel.
-- Administración de roles y usuarios activos.
+- Reportes de inventario y movimientos con filtro por fechas, exportables a PDF y Excel.
+- Creación de usuarios, roles, estado y recuperación de contraseña.
 - Diseño responsive para computadora y celular.
 
 ## Tecnologías
@@ -40,6 +40,7 @@ Por eso, en este sistema el stock no se edita: cambia solamente al registrar una
 |---|---|---|
 | Consultar inventario, alertas y movimientos | Sí | Sí |
 | Registrar movimientos | Sí | Sí |
+| Anular movimientos | Sí | No |
 | Modificar productos, categorías y proveedores | Sí | No |
 | Administrar usuarios | Sí | No |
 
@@ -69,12 +70,14 @@ Requisitos: Node.js 20.9 o superior y un proyecto de [Supabase](https://supabase
    npm install
    ```
 
-2. Copiá `.env.local.example` como `.env.local` y completá la URL y la clave pública de tu proyecto.
+2. Copiá `.env.local.example` como `.env.local` y completá la URL, la clave pública y `SUPABASE_SERVICE_ROLE_KEY`. Esta última es secreta, se usa solo en el servidor para administrar cuentas y nunca debe llevar el prefijo `NEXT_PUBLIC_`.
 
 3. En el SQL Editor de Supabase, ejecutá en este orden:
 
    - `supabase/migrations/0001_init.sql`
    - `supabase/migrations/0002_seguridad.sql`
+   - `supabase/migrations/0003_perfiles_visibles.sql`
+   - `supabase/migrations/0004_anular_movimientos.sql`
 
 4. En **Authentication > Users**, creá un usuario. Se registra como `operador`; para convertirlo en administrador, ejecutá:
 
@@ -84,7 +87,9 @@ Requisitos: Node.js 20.9 o superior y un proyecto de [Supabase](https://supabase
 
 5. Opcional: cargá datos ficticios ejecutando `supabase/demo.sql`. El script reinicia los datos de la demo y se detiene sin cambiar nada si encuentra productos o movimientos reales.
 
-6. Iniciá la aplicación:
+6. Opcional: para recuperar contraseñas por correo, configurá un SMTP propio en Supabase y cambiá el enlace de la plantilla **Reset password** por `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery`.
+
+7. Iniciá la aplicación:
 
    ```bash
    npm run dev

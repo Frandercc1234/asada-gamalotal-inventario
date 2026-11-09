@@ -40,6 +40,7 @@ export type Database = {
       }
       movimientos: {
         Row: {
+          anula_a: number | null
           cantidad: number
           created_at: string
           id: number
@@ -50,6 +51,7 @@ export type Database = {
           usuario_id: string
         }
         Insert: {
+          anula_a?: number | null
           cantidad: number
           created_at?: string
           id?: never
@@ -60,6 +62,7 @@ export type Database = {
           usuario_id: string
         }
         Update: {
+          anula_a?: number | null
           cantidad?: number
           created_at?: string
           id?: never
@@ -241,6 +244,26 @@ export type Database = {
       }
     }
     Functions: {
+      anular_movimiento: {
+        Args: { p_motivo: string; p_movimiento_id: number }
+        Returns: {
+          anula_a: number | null
+          cantidad: number
+          created_at: string
+          id: number
+          motivo: string | null
+          producto_id: number
+          stock_resultante: number
+          tipo: Database["public"]["Enums"]["tipo_movimiento"]
+          usuario_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "movimientos"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       mi_rol: {
         Args: never
         Returns: Database["public"]["Enums"]["rol_usuario"]
@@ -253,6 +276,7 @@ export type Database = {
           p_tipo: Database["public"]["Enums"]["tipo_movimiento"]
         }
         Returns: {
+          anula_a: number | null
           cantidad: number
           created_at: string
           id: number

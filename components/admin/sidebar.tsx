@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   LogOut,
+  KeyRound,
 } from "lucide-react";
 import { logout } from "@/app/login/actions";
 import { cn } from "@/lib/utils";
@@ -98,7 +99,14 @@ export function Sidebar({
           <p className="text-xs capitalize text-text-secondary">{rol}</p>
         </div>
       </div>
-      <form action={logout} className="mt-2">
+      <Link
+        href="/nueva-clave"
+        className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2 max-md:py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-surface hover:text-text-primary"
+      >
+        <KeyRound className="h-4 w-4" />
+        Cambiar contraseña
+      </Link>
+      <form action={logout}>
         <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 max-md:py-3 text-left text-sm font-medium text-danger transition-colors hover:bg-danger-bg">
           <LogOut className="h-4 w-4" />
           Cerrar sesión

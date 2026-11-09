@@ -161,7 +161,7 @@ export function ProductosClient({
             }
           />
         ) : (
-          <Table className="min-w-[720px]">
+          <Table className="lg:min-w-[720px]">
             <TableHead>
               <tr>
                 <Th>Código</Th>
@@ -179,24 +179,24 @@ export function ProductosClient({
                 return (
                   <TableRow key={p.id}>
                     <Td className="font-mono text-xs">{p.codigo}</Td>
-                    <Td>{p.nombre}</Td>
-                    <Td className="text-text-secondary">
+                    <Td className="max-lg:font-medium">{p.nombre}</Td>
+                    <Td label="Categoría" className="text-text-secondary">
                       {p.categorias?.nombre ?? "—"}
                     </Td>
-                    <Td>
+                    <Td label="Stock">
                       <Badge tone={bajo ? "red" : "green"}>
                         {p.stock_actual} {p.unidad}
                       </Badge>
                     </Td>
-                    <Td numeric>{formatColones(p.precio)}</Td>
-                    <Td>
+                    <Td label="Precio" numeric>{formatColones(p.precio)}</Td>
+                    <Td label="Estado">
                       <Badge tone={p.activo ? "sky" : "gray"}>
                         {p.activo ? "Activo" : "Inactivo"}
                       </Badge>
                     </Td>
                     {esAdmin && (
                       <Td>
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-end gap-2 max-lg:pt-2">
                           <Button
                             variant="secondary"
                             size="sm"

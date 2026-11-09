@@ -130,7 +130,7 @@ export function ReportesClient({
             description="No hay información para este reporte todavía."
           />
         ) : (
-          <Table className="min-w-[640px]">
+          <Table className="lg:min-w-[640px]">
             <TableHead>
               <tr>
                 {columnas.map((c) => (
@@ -142,7 +142,7 @@ export function ReportesClient({
               {filas.map((fila, i) => (
                 <TableRow key={i}>
                   {fila.map((celda, j) => (
-                    <Td key={j}>{celda}</Td>
+                    <Td key={j} label={columnas[j]}>{celda}</Td>
                   ))}
                 </TableRow>
               ))}

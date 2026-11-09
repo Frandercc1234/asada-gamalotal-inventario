@@ -41,7 +41,7 @@ export default async function DashboardPage() {
         .order("stock_actual"),
       supabase
         .from("movimientos")
-        .select("tipo, cantidad, created_at")
+        .select("tipo, created_at")
         .gte("created_at", desde.toISOString()),
       supabase
         .from("movimientos")
@@ -68,17 +68,18 @@ export default async function DashboardPage() {
     porDia.set(fecha, { fecha, entradas: 0, salidas: 0 });
   }
 
+  // Se cuentan movimientos: sumar cantidades mezclaría kilos con unidades.
   let totalEntradas = 0;
   let totalSalidas = 0;
   for (const m of movs ?? []) {
     const punto = porDia.get(etiqueta(new Date(m.created_at)));
     if (!punto) continue;
     if (m.tipo === "entrada") {
-      punto.entradas += m.cantidad;
-      totalEntradas += m.cantidad;
+      punto.entradas += 1;
+      totalEntradas += 1;
     } else {
-      punto.salidas += m.cantidad;
-      totalSalidas += m.cantidad;
+      punto.salidas += 1;
+      totalSalidas += 1;
     }
   }
   const dataChart = Array.from(porDia.values());
@@ -88,7 +89,10 @@ export default async function DashboardPage() {
     timeZone: "America/Costa_Rica",
   }).format(new Date());
 
-  const primerNombre = perfil?.nombre.split(" ")[0] || "";
+  // Si el perfil no tiene nombre, nombre guarda el correo: no sirve de saludo.
+  const primerNombre = perfil?.nombre.includes("@")
+    ? ""
+    : perfil?.nombre.split(" ")[0] || "";
 
   return (
     <div className="space-y-6">

@@ -137,7 +137,7 @@ export function MovimientosClient({
             description="Todavía no se ha registrado ningún movimiento."
           />
         ) : (
-          <Table className="min-w-[720px]">
+          <Table className="lg:min-w-[720px]">
             <TableHead>
               <tr>
                 <Th>Fecha</Th>
@@ -155,18 +155,18 @@ export function MovimientosClient({
                   <Td className="whitespace-nowrap text-text-secondary">
                     {formatFecha(m.created_at)}
                   </Td>
-                  <Td>{m.productos?.nombre ?? "—"}</Td>
-                  <Td>
+                  <Td className="max-lg:font-medium">{m.productos?.nombre ?? "—"}</Td>
+                  <Td label="Tipo">
                     <Badge tone={m.tipo === "entrada" ? "green" : "amber"}>
                       {m.tipo}
                     </Badge>
                   </Td>
-                  <Td numeric>{m.cantidad}</Td>
-                  <Td numeric>{m.stock_resultante}</Td>
-                  <Td className="text-text-secondary">
+                  <Td label="Cantidad" numeric>{m.cantidad}</Td>
+                  <Td label="Stock resultante" numeric>{m.stock_resultante}</Td>
+                  <Td label="Usuario" className="text-text-secondary">
                     {m.profiles?.nombre ?? "—"}
                   </Td>
-                  <Td className="text-text-secondary">{m.motivo ?? "—"}</Td>
+                  <Td label="Motivo" className="text-text-secondary">{m.motivo ?? "—"}</Td>
                 </TableRow>
               ))}
             </TableBody>

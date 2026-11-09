@@ -44,7 +44,7 @@ export function Modal({
       onClick={onClose}
     >
       <Card
-        className={cn("w-full max-w-lg animate-modal-in", className)}
+        className={cn("max-h-[calc(100dvh-2rem)] w-full max-w-lg animate-modal-in overflow-y-auto", className)}
         onClick={detenerPropagacion}
       >
         <div className="mb-4 flex items-center justify-between">
@@ -54,7 +54,7 @@ export function Modal({
           <button
             onClick={onClose}
             aria-label="Cerrar"
-            className="rounded-lg p-1.5 text-text-secondary transition-colors hover:bg-surface hover:text-text-primary"
+            className="rounded-lg p-1.5 max-md:p-3 text-text-secondary transition-colors hover:bg-surface hover:text-text-primary"
           >
             <X className="h-5 w-5" />
           </button>

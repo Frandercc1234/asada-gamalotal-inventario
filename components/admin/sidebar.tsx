@@ -64,7 +64,7 @@ export function Sidebar({
             href={item.href}
             onClick={() => setAbierto(false)}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              "flex items-center gap-3 rounded-lg px-3 py-2 max-md:py-3 text-sm font-medium transition-colors",
               activo
                 ? "bg-primary/10 text-primary"
                 : "text-text-secondary hover:bg-surface hover:text-text-primary",
@@ -99,7 +99,7 @@ export function Sidebar({
         </div>
       </div>
       <form action={logout} className="mt-2">
-        <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-danger transition-colors hover:bg-danger-bg">
+        <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 max-md:py-3 text-left text-sm font-medium text-danger transition-colors hover:bg-danger-bg">
           <LogOut className="h-4 w-4" />
           Cerrar sesión
         </button>
@@ -115,7 +115,7 @@ export function Sidebar({
         </span>
         <button
           onClick={() => setAbierto(true)}
-          className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-surface"
+          className="rounded-lg p-3 text-text-secondary transition-colors hover:bg-surface"
           aria-label="Abrir menú"
         >
           <Menu className="h-5 w-5" />
@@ -149,7 +149,7 @@ export function Sidebar({
               </div>
               <button
                 onClick={() => setAbierto(false)}
-                className="rounded-lg p-2 text-text-secondary hover:bg-surface"
+                className="rounded-lg p-3 text-text-secondary hover:bg-surface"
                 aria-label="Cerrar menú"
               >
                 <X className="h-5 w-5" />

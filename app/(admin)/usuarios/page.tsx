@@ -84,7 +84,7 @@ export default async function UsuariosPage({
         {(usuarios ?? []).length === 0 ? (
           <EmptyState icon={Users} title="Sin usuarios" />
         ) : (
-          <Table className="min-w-[640px]">
+          <Table className="lg:min-w-[640px]">
             <TableHead>
               <tr>
                 <Th>Nombre</Th>
@@ -99,7 +99,7 @@ export default async function UsuariosPage({
                 const esPropio = u.id === perfil.id;
                 return (
                   <TableRow key={u.id}>
-                    <Td>
+                    <Td className="max-lg:font-medium">
                       {u.nombre}
                       {esPropio && (
                         <span className="ml-2 text-xs text-text-secondary">
@@ -107,7 +107,7 @@ export default async function UsuariosPage({
                         </span>
                       )}
                     </Td>
-                    <Td>
+                    <Td label="Rol">
                       {esPropio ? (
                         <span className="capitalize">{u.rol}</span>
                       ) : (
@@ -119,7 +119,7 @@ export default async function UsuariosPage({
                           <Select
                             name="rol"
                             defaultValue={u.rol}
-                            className="h-9 w-32"
+                            className="h-9 max-md:h-11 w-32"
                             aria-label={`Rol de ${u.nombre}`}
                           >
                             <option value="operador">operador</option>
@@ -131,12 +131,12 @@ export default async function UsuariosPage({
                         </form>
                       )}
                     </Td>
-                    <Td>
+                    <Td label="Estado">
                       <Badge tone={u.activo ? "green" : "gray"}>
                         {u.activo ? "Activo" : "Inactivo"}
                       </Badge>
                     </Td>
-                    <Td className="whitespace-nowrap text-text-secondary">
+                    <Td label="Alta" className="whitespace-nowrap text-text-secondary">
                       {formatFecha(u.created_at)}
                     </Td>
                     <Td className="text-right">

@@ -16,8 +16,8 @@ const variantes: Record<Variant, string> = {
 };
 
 const tamanos: Record<Size, string> = {
-  sm: "h-9 px-3 text-sm gap-1.5",
-  md: "h-10 px-4 text-sm gap-2",
+  sm: "h-9 max-md:h-11 px-3 text-sm gap-1.5",
+  md: "h-10 max-md:h-11 px-4 text-sm gap-2",
   lg: "h-11 px-6 text-base gap-2",
 };
 

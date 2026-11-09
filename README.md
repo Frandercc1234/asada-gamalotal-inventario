@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistema de Inventario — ASADA Gamalotal
 
-## Getting Started
+Aplicación web para administrar el inventario de una ASADA (acueducto rural comunitario de Costa Rica): qué materiales hay, qué entró, qué salió y qué está por agotarse. Incluye una página pública informativa y un panel interno para el personal.
 
-First, run the development server:
+## El problema
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+El personal de una ASADA necesita saber con certeza cuánto material tiene y quién lo movió, muchas veces desde el celular y sin conocimientos técnicos. Si cualquiera puede editar las existencias a mano, el número deja de ser confiable.
+
+Por eso, en este sistema el stock no se edita: cambia solamente al registrar una entrada o una salida, y cada movimiento queda en el historial con su usuario y su fecha.
+
+## Funcionalidades
+
+- Dashboard con valor del inventario, alertas y gráfico de entradas y salidas de los últimos 30 días.
+- Gestión de productos, categorías y proveedores.
+- Registro de entradas y salidas con validación de existencias.
+- Alertas de productos con stock igual o menor al mínimo.
+- Reportes de inventario y movimientos exportables a PDF y Excel.
+- Administración de roles y usuarios activos.
+- Diseño responsive para computadora y celular.
+
+## Tecnologías
+
+| Área | Herramientas |
+|---|---|
+| Aplicación | Next.js 16 (App Router), React 19, TypeScript |
+| Estilos | Tailwind CSS v4 |
+| Base de datos y autenticación | Supabase (PostgreSQL, Auth, RLS) |
+| Gráficos | Recharts |
+| Exportación | jsPDF, jspdf-autotable, ExcelJS |
+
+## Decisiones técnicas
+
+**El stock solo cambia mediante una transacción.** La función de PostgreSQL `registrar_movimiento` bloquea la fila del producto, valida que haya existencias en las salidas, actualiza el stock y crea el movimiento en una sola operación. Dos salidas simultáneas no pueden dejar el stock en negativo, y la tabla de movimientos no permite inserciones directas.
+
+**Los permisos están en la base de datos.** Row Level Security aplica las reglas aunque alguien evite la interfaz:
+
+| Acción | `admin` | `operador` |
+|---|---|---|
+| Consultar inventario, alertas y movimientos | Sí | Sí |
+| Registrar movimientos | Sí | Sí |
+| Modificar productos, categorías y proveedores | Sí | No |
+| Administrar usuarios | Sí | No |
+
+**Sin una capa de backend adicional.** Para un inventario de poco volumen, Server Components, Server Actions y funciones de PostgreSQL alcanzan y mantienen el proyecto simple.
+
+## Estructura
+
+```text
+app/(public)/     página informativa
+app/(admin)/      dashboard, productos, categorías, proveedores,
+                  movimientos, reportes y usuarios
+app/login/        inicio de sesión con Server Actions
+components/       interfaz, panel administrativo y gráficos
+lib/supabase/     clientes de Supabase para navegador y servidor
+lib/export/       generación de PDF y Excel
+supabase/         migraciones SQL y datos de ejemplo
+proxy.ts          protección de rutas y refresco de sesión
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Instalación
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Requisitos: Node.js 20.9 o superior y un proyecto de [Supabase](https://supabase.com).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Instalá las dependencias:
 
-## Learn More
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. Copiá `.env.local.example` como `.env.local` y completá la URL y la clave pública de tu proyecto.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. En el SQL Editor de Supabase, ejecutá en este orden:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   - `supabase/migrations/0001_init.sql`
+   - `supabase/migrations/0002_seguridad.sql`
 
-## Deploy on Vercel
+4. En **Authentication > Users**, creá un usuario. Se registra como `operador`; para convertirlo en administrador, ejecutá:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```sql
+   update public.profiles set rol = 'admin' where id = 'ID_DEL_USUARIO';
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. Opcional: cargá datos ficticios ejecutando `supabase/demo.sql`. El script reinicia los datos de la demo y se detiene sin cambiar nada si encuentra productos o movimientos reales.
+
+6. Iniciá la aplicación:
+
+   ```bash
+   npm run dev
+   ```
+
+   Quedará disponible en `http://localhost:3000`.
+
+## Comandos
+
+| Comando | Descripción |
+|---|---|
+| `npm run dev` | Inicia el entorno de desarrollo |
+| `npm run build` | Genera la versión de producción |
+| `npm run start` | Ejecuta la versión de producción |
+| `npm run lint` | Revisa el código con ESLint |

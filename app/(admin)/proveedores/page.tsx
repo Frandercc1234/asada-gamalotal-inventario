@@ -109,7 +109,7 @@ export default async function ProveedoresPage({
             description="Agregá el primer proveedor desde el formulario de arriba."
           />
         ) : (
-          <Table className="min-w-[640px]">
+          <Table className="lg:min-w-[640px]">
             <TableHead>
               <tr>
                 <Th>Nombre</Th>
@@ -123,11 +123,11 @@ export default async function ProveedoresPage({
             <TableBody>
               {(proveedores ?? []).map((p) => (
                 <TableRow key={p.id}>
-                  <Td>{p.nombre}</Td>
-                  <Td className="text-text-secondary">{p.contacto ?? "—"}</Td>
-                  <Td className="text-text-secondary">{p.telefono ?? "—"}</Td>
-                  <Td className="text-text-secondary">{p.email ?? "—"}</Td>
-                  <Td>
+                  <Td className="max-lg:font-medium">{p.nombre}</Td>
+                  <Td label="Contacto" className="text-text-secondary">{p.contacto ?? "—"}</Td>
+                  <Td label="Teléfono" className="text-text-secondary">{p.telefono ?? "—"}</Td>
+                  <Td label="Email" className="text-text-secondary">{p.email ?? "—"}</Td>
+                  <Td label="Estado">
                     <Badge tone={p.activo ? "sky" : "gray"}>
                       {p.activo ? "Activo" : "Inactivo"}
                     </Badge>

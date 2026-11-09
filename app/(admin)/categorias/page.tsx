@@ -97,7 +97,7 @@ export default async function CategoriasPage({
             description="Agregá la primera categoría desde el formulario de arriba."
           />
         ) : (
-          <Table className="min-w-[480px]">
+          <Table className="lg:min-w-[480px]">
             <TableHead>
               <tr>
                 <Th>Nombre</Th>
@@ -109,11 +109,11 @@ export default async function CategoriasPage({
             <TableBody>
               {(categorias ?? []).map((c) => (
                 <TableRow key={c.id}>
-                  <Td>{c.nombre}</Td>
+                  <Td className="max-lg:font-medium">{c.nombre}</Td>
                   <Td className="text-text-secondary">
                     {c.descripcion ?? "—"}
                   </Td>
-                  <Td>
+                  <Td label="Estado">
                     <Badge tone={c.activo ? "sky" : "gray"}>
                       {c.activo ? "Activa" : "Inactiva"}
                     </Badge>

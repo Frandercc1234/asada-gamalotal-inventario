@@ -45,3 +45,8 @@ next-env.d.ts
 /.claude/
 /.agents/
 /CLAUDE.md
+
+# Archivos de herramientas (solo locales)
+/AGENTS.md
+/skills-lock.json
+/docs/superpowers/

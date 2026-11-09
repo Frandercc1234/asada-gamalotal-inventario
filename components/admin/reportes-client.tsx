@@ -86,11 +86,11 @@ export function ReportesClient({
     exportarPDF(titulo, columnas, filas, archivo);
   }
 
-  function descargarExcel() {
+  async function descargarExcel() {
     const objetos = filas.map((fila) =>
       Object.fromEntries(columnas.map((c, i) => [c, fila[i]])),
     );
-    exportarExcel(objetos, archivo, esInv ? "Inventario" : "Movimientos");
+    await exportarExcel(objetos, archivo, esInv ? "Inventario" : "Movimientos");
   }
 
   return (
